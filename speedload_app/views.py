@@ -1,88 +1,88 @@
-import requests
+import asyncio
+import aiohttp
+import time
 from bs4 import BeautifulSoup
 from django.http import JsonResponse
 from django.shortcuts import render
-import time
 
-def get_resource_size_and_time(url):
-    try:
-        # اندازه و زمان دریافت HTML
-        start_time = time.time()
-        response = requests.get(url)
-        load_time = time.time() - start_time
-        html_size = len(response.content)
 
-        # استفاده از BeautifulSoup برای استخراج منابع
-        soup = BeautifulSoup(response.content, 'html.parser')
+async def fetch_resource(session, url):
+    async with session.get(url) as response:
+        if response.status != 200:  # بررسی وضعیت پاسخ
+            return None, 0
+        content = await response.read()
+        return content, len(content)  # بازگرداندن محتوا و اندازه آن
 
-        # زمان و حجم منابع CSS
-        css_resources = soup.find_all('link', rel='stylesheet')
-        css_data = {'time': 0, 'size': 0}
 
-        for css in css_resources:
-            try:
-                start_time = time.time()
+async def get_resource_size_and_time(url):
+    async with aiohttp.ClientSession() as session:
+        try:
+            if not url.startswith('http'):
+                url = 'http://' + url
+
+            # دریافت HTML
+            html_start = time.time()
+            html_content, html_size = await fetch_resource(session, url)
+            if html_content is None:
+                return {'error': 'خطا در دریافت HTML'}
+
+            html_time = time.time() - html_start
+
+            soup = BeautifulSoup(html_content, 'html.parser')
+
+            # برای CSS, JS و تصاویر
+            css_data, js_data, img_data = [], [], []
+
+            # CSS resources
+            for css in soup.find_all('link', rel='stylesheet'):
                 css_url = css['href']
                 if not css_url.startswith('http'):
                     css_url = url + css_url
-                css_response = requests.get(css_url)
-                css_data['time'] += time.time() - start_time
-                css_data['size'] += len(css_response.content)
-            except:
-                continue
-
-        # زمان و حجم منابع JavaScript
-        js_resources = soup.find_all('script', src=True)
-        js_data = {'time': 0, 'size': 0}
-
-        for js in js_resources:
-            try:
                 start_time = time.time()
+                _, size = await fetch_resource(session, css_url)
+                css_data.append({'url': css_url, 'size': size, 'time': time.time() - start_time})
+
+            # JS resources
+            for js in soup.find_all('script', src=True):
                 js_url = js['src']
                 if not js_url.startswith('http'):
                     js_url = url + js_url
-                js_response = requests.get(js_url)
-                js_data['time'] += time.time() - start_time
-                js_data['size'] += len(js_response.content)
-            except:
-                continue
-
-        # زمان و حجم تصاویر
-        img_resources = soup.find_all('img')
-        img_data = {'time': 0, 'size': 0}
-
-        for img in img_resources:
-            try:
                 start_time = time.time()
+                _, size = await fetch_resource(session, js_url)
+                js_data.append({'url': js_url, 'size': size, 'time': time.time() - start_time})
+
+            # Image resources
+            for img in soup.find_all('img'):
                 img_url = img['src']
                 if not img_url.startswith('http'):
                     img_url = url + img_url
-                img_response = requests.get(img_url)
-                img_data['time'] += time.time() - start_time
-                img_data['size'] += len(img_response.content)
-            except:
-                continue
+                start_time = time.time()
+                _, size = await fetch_resource(session, img_url)
+                img_data.append({'url': img_url, 'size': size, 'time': time.time() - start_time})
 
-        return {
-            'html': {'time': load_time, 'size': html_size},
-            'css': css_data,
-            'js': js_data,
-            'img': img_data
-        }
-    except Exception as e:
-        return {'error': str(e)}
+            return {
+                'html': {'time': html_time, 'size': html_size},
+                'css': css_data,
+                'js': js_data,
+                'img': img_data
+            }
+        except Exception as e:
+            print(f"Error processing URL {url}: {e}")
+            return {'error': 'خطا در پردازش URL', 'details': str(e)}
+
 
 def speed_test(request):
     if request.method == 'POST':
         url = request.POST.get('url')
 
         if not url:
-            return JsonResponse({'error': 'لطفا آدرس سایت را وارد کنید'})
+            return JsonResponse({'error': 'لطفا آدرس سایت را وارد کنید'}, status=400)
 
-        if not url.startswith('http'):
-            url = 'http://' + url
-
-        results = get_resource_size_and_time(url)
-        return JsonResponse(results)
+        try:
+            results = asyncio.run(get_resource_size_and_time(url))
+            return JsonResponse(results)
+        except Exception as e:
+            print(f"Error processing URL {url}: {e}")
+            return JsonResponse({'error': 'خطا در پردازش URL', 'details': str(e)}, status=500)
 
     return render(request, 'speedload_app/speed_test.html')
