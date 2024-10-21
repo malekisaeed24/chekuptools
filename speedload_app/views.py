@@ -5,21 +5,25 @@ from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 from django.http import JsonResponse
 from django.shortcuts import render
+from asgiref.sync import async_to_sync
+
+from .models import Slider, Section
+
+
+# --- Speed Test View ---
 
 async def fetch_resource(session, url):
     try:
-        start_time = time.time()  # ثبت زمان شروع
+        start_time = time.time()
         async with session.get(url) as response:
             content = await response.read()
-            end_time = time.time()  # ثبت زمان پایان
-            return content, response.content_type, end_time - start_time  # محاسبه زمان بارگذاری
+            end_time = time.time()
+            return content, response.content_type, end_time - start_time
     except Exception as e:
-        return None, None, 0  # در صورت بروز خطا
+        return None, None, 0
 
 async def get_resource_size_and_time(url):
     async with aiohttp.ClientSession() as session:
-        # زمان بارگذاری HTML
-        html_start = time.time()
         html_content, html_type, html_time = await fetch_resource(session, url)
         if not html_content:
             return {'error': 'خطا در پردازش URL'}
@@ -27,7 +31,6 @@ async def get_resource_size_and_time(url):
         html_size = len(html_content)
         soup = BeautifulSoup(html_content, 'html.parser')
 
-        # تبدیل لینک‌های نسبی به لینک‌های کامل
         tasks = []
         for css in soup.find_all('link', rel='stylesheet'):
             css_url = urljoin(url, css.get('href'))
@@ -43,7 +46,6 @@ async def get_resource_size_and_time(url):
         css_time, js_time, img_time = 0, 0, 0
         css_size, js_size, img_size = 0, 0, 0
 
-        # محاسبه زمان و اندازه کل CSS، JS و تصاویر
         for resource, resource_type, resource_time in resources:
             if resource:
                 if 'css' in resource_type:
@@ -56,7 +58,6 @@ async def get_resource_size_and_time(url):
                     img_time += resource_time
                     img_size += len(resource)
 
-        # محاسبه زمان کلی
         total_time = html_time + css_time + js_time + img_time
 
         return {
@@ -64,7 +65,7 @@ async def get_resource_size_and_time(url):
             'css': {'time': css_time, 'size': css_size},
             'js': {'time': js_time, 'size': js_size},
             'img': {'time': img_time, 'size': img_size},
-            'total_time': total_time  # زمان کلی بارگذاری
+            'total_time': total_time
         }
 
 def speed_test(request):
@@ -78,9 +79,26 @@ def speed_test(request):
             url = 'http://' + url
 
         try:
-            results = asyncio.run(get_resource_size_and_time(url))
+            results = async_to_sync(get_resource_size_and_time)(url)
             return JsonResponse(results)
         except Exception as e:
             return JsonResponse({'error': 'خطا در پردازش URL', 'details': str(e)})
 
     return render(request, 'speedload_app/speed_test.html')
+
+
+# --- Homepage View ---
+
+def homepage(request):
+    sliders = Slider.objects.all().order_by('order')
+    sections = Section.objects.all().order_by('order')  # دریافت تمام سکشن‌ها
+    return render(request, 'home.html', {'sliders': sliders, 'sections': sections})
+
+def home(request):
+    sliders = Slider.objects.all()  # دریافت تمام اسلایدرها از دیتابیس
+    sections = Section.objects.all()  # دریافت تمام سکشن‌ها از دیتابیس
+    context = {
+        'sliders': sliders,
+        'sections': sections
+    }
+    return render(request, 'speedload_app/home.html', context)
