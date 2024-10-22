@@ -1,146 +1,11 @@
-<!DOCTYPE html>
-<html lang="fa">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>صفحه اصلی</title>
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #eef2f3;
-            margin: 0;
-            padding: 0;
-            line-height: 1.6;
-            color: #333;
-        }
-        header {
-            background-color: #4a4a4a;
-            color: white;
-            padding: 20px 0;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-        nav ul {
-            list-style-type: none;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-        }
-        nav ul li {
-            margin: 0 20px;
-        }
-        nav ul li a {
-            color: white;
-            text-decoration: none;
-            font-size: 18px;
-            padding: 10px 15px;
-            border-radius: 30px;
-            transition: background-color 0.3s ease, color 0.3s ease;
-        }
-        nav ul li a:hover {
-            background-color: #333;
-            color: #fff;
-        }
-        .slider {
-            margin: 20px 0;
-        }
-        .slider-container {
-            width: 100%;
-            height: 450px;
-            position: relative;
-            overflow: hidden;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        }
-        .slide {
-            width: 100%;
-            height: 100%;
-            background-size: cover;
-            background-position: center;
-            position: absolute;
-            opacity: 0;
-            transition: opacity 1s ease;
-        }
-        .slide:first-child {
-            opacity: 1;
-        }
-        .slide a {
-            display: block;
-            color: white;
-            text-align: center;
-            margin-top: 180px;
-            font-size: 28px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
-            font-weight: bold;
-            text-decoration: underline;
-        }
-        .sections {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* اندازه‌های سکشن‌ها کوچک‌تر */
-            gap: 20px; /* فاصله بین سکشن‌ها */
-            padding: 20px;
-            background-color: #fff;
-        }
-        .section {
-            background-color: #fdfdfd;
-            padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            text-align: center;
-        }
-        .section:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-        }
-        .section img {
-            width: 80px; /* اندازه تصویر کوچک‌تر */
-            height: auto;
-            margin-bottom: 10px; /* فاصله تصویر و متن */
-            border-radius: 50%;
-            border: 2px solid #4a4a4a; /* حاشیه دور تصویر */
-            padding: 5px; /* فاصله تصویر از حاشیه */
-            background-color: #fff; /* پس‌زمینه تصویر */
-        }
-        .section h2 {
-            font-size: 20px; /* اندازه فونت عنوان */
-            margin: 5px 0; /* فاصله عنوان */
-            color: #4a4a4a;
-        }
-        .section p {
-            color: #555;
-            margin-bottom: 10px; /* فاصله متن و لینک */
-        }
-        .section a {
-            color: #007bff;
-            text-decoration: none;
-            padding: 5px 10px; /* حاشیه لینک */
-            border-radius: 5px;
-            transition: background-color 0.3s ease;
-            font-weight: bold;
-        }
-        .section a:hover {
-            background-color: #007bff;
-            color: white;
-        }
-    </style>
-</head>
-<body>
-    <header>
-        <nav>
-            <ul>
-                <li><a href="/">خانه</a></li>
-                <li><a href="/about">درباره ما</a></li>
-                <li><a href="/contact">تماس با ما</a></li>
-            </ul>
-        </nav>
-    </header>
+{% extends 'base.html' %}
+{% load static %}
 
+
+{% block title %}صفحه اصلی{% endblock %}
+
+{% block content %}
+<div class="container">
     <section class="slider">
         <div class="slider-container">
             {% for slider in sliders %}
@@ -149,6 +14,20 @@
             </div>
             {% endfor %}
         </div>
+    </section>
+
+    <section class="sidebar">
+        {% if sidebars %}
+            {% for sidebar in sidebars %}
+            <div class="sidebar-item">
+                <img src="{{ sidebar.icon.url }}" alt="{{ sidebar.title }}" style="width: 50px; height: 50px;" />
+                <h2>{{ sidebar.title }}</h2>
+                <p>{{ sidebar.content }}</p>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p>هیچ سایدباری وجود ندارد.</p>
+        {% endif %}
     </section>
 
     <section class="sections">
@@ -163,25 +42,25 @@
         </div>
         {% endfor %}
     </section>
+</div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const slides = document.querySelectorAll('.slide');
-            let currentSlide = 0;
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const slides = document.querySelectorAll('.slide');
+        let currentSlide = 0;
 
-            function showSlide(index) {
-                slides.forEach((slide, i) => {
-                    slide.style.opacity = i === index ? '1' : '0';
-                });
-            }
+        function showSlide(index) {
+            slides.forEach((slide, i) => {
+                slide.style.opacity = i === index ? '1' : '0';
+            });
+        }
 
-            function nextSlide() {
-                currentSlide = (currentSlide + 1) % slides.length;
-                showSlide(currentSlide);
-            }
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % slides.length;
+            showSlide(currentSlide);
+        }
 
-            setInterval(nextSlide, 3000); // تغییر اسلاید هر 3 ثانیه
-        });
-    </script>
-</body>
-</html>
+        setInterval(nextSlide, 3000); // تغییر اسلاید هر 3 ثانیه
+    });
+</script>
+{% endblock %}

@@ -1,68 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Speed Test</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            padding: 20px;
-        }
+{% extends 'base.html' %}
 
-        h1 {
-            text-align: center;
-            color: #333;
-        }
+{% block title %}Speed Test{% endblock %}
 
-        form {
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        input[type="text"] {
-            padding: 10px;
-            width: 300px;
-            font-size: 16px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-
-        button {
-            padding: 10px 20px;
-            background-color: #28a745;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #218838;
-        }
-
-        #result {
-            background-color: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .chart-container {
-            display: flex;
-            justify-content: space-around;
-            margin-top: 30px;
-        }
-
-        .chart-box {
-            width: 45%;
-        }
-    </style>
-</head>
-<body>
-
+{% block content %}
 <h1>Website Speed Test</h1>
 
 <form id="speedTestForm" method="POST">
@@ -73,7 +13,6 @@
 </form>
 
 <div id="result">
-    <!-- نتیجه تست سرعت -->
     <h3>Test Results:</h3>
     Total Load Time: <span id="totalLoadTime"></span> seconds
     <div class="chart-container">
@@ -86,6 +25,7 @@
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     // متغیرهایی برای ذخیره نمودارها
     let loadTimeChart, resourceSizeChart;
@@ -171,6 +111,4 @@
         .catch(error => console.error('Error:', error));
     });
 </script>
-
-</body>
-</html>
+{% endblock %}

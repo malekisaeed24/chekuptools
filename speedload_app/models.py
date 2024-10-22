@@ -19,3 +19,16 @@ class Section(models.Model):
 
     def __str__(self):
         return self.title
+
+
+from django.db import models
+
+class Sidebar(models.Model):
+    title = models.CharField(max_length=255)
+    content = models.TextField()
+    icon = models.ImageField(upload_to='sidebar_icons/')  # فیلد برای آپلود تصویر
+
+    def __str__(self):
+        return self.title
+
+

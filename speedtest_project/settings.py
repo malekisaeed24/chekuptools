@@ -57,7 +57,7 @@ ROOT_URLCONF = 'speedtest_project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'speedload_app', 'templates')],  # به مسیر صحیح اشاره کنید
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

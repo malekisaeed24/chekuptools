@@ -1,23 +1,65 @@
-/* style.css */
-.slider-container {
-    display: flex;
-    overflow-x: scroll;
-    scroll-behavior: smooth;
-}
+<style>
+    .container {
+        max-width: 1200px; /* عرض حداکثر صفحه */
+        margin: 0 auto; /* وسط‌چین کردن */
+        padding: 20px;
+    }
 
-.slide {
-    min-width: 100%;
-    height: 300px;
-    background-size: cover;
-    background-position: center;
-    position: relative;
-}
+    .slider {
+        position: relative;
+        overflow: hidden;
+        height: 400px; /* ارتفاع اسلاید */
+    }
 
-.sections {
-    display: flex;
-    justify-content: space-around;
-}
+    .slider-container {
+        display: flex;
+        transition: opacity 0.5s ease-in-out;
+    }
 
-.section {
-    width: 30%;
-}
+    .slide {
+        min-width: 100%;
+        opacity: 0;
+        transition: opacity 0.5s;
+        background-size: cover; /* پوشش پس‌زمینه */
+        background-position: center; /* وسط‌چین کردن تصویر */
+    }
+
+    .slide a {
+        display: block;
+        color: white;
+        text-align: center;
+        font-size: 2em;
+        text-decoration: none;
+        padding: 150px 0; /* padding برای وسط‌چین کردن متن */
+        background-color: rgba(0, 0, 0, 0.5); /* پس‌زمینه نیمه شفاف */
+    }
+
+    .sidebar {
+        margin-top: 20px;
+    }
+
+    .sidebar-item {
+        background: white;
+        padding: 15px;
+        border-radius: 5px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        margin-bottom: 10px; /* فاصله بین سایدبارها */
+    }
+
+    .sections {
+        margin-top: 20px;
+    }
+
+    .section {
+        background: white;
+        padding: 15px;
+        border-radius: 5px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        margin-bottom: 10px; /* فاصله بین بخش‌ها */
+    }
+
+    .section img {
+        max-width: 100%; /* عرض تصویر */
+        border-radius: 5px; /* گرد کردن لبه‌های تصویر */
+    }
+</style>

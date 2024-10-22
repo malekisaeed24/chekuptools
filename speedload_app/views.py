@@ -7,7 +7,7 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from asgiref.sync import async_to_sync
 
-from .models import Slider, Section
+from .models import Slider, Section, Sidebar  # اضافه کردن Sidebar به Import
 
 
 # --- Speed Test View ---
@@ -89,16 +89,13 @@ def speed_test(request):
 
 # --- Homepage View ---
 
-def homepage(request):
-    sliders = Slider.objects.all().order_by('order')
-    sections = Section.objects.all().order_by('order')  # دریافت تمام سکشن‌ها
-    return render(request, 'home.html', {'sliders': sliders, 'sections': sections})
-
 def home(request):
-    sliders = Slider.objects.all()  # دریافت تمام اسلایدرها از دیتابیس
-    sections = Section.objects.all()  # دریافت تمام سکشن‌ها از دیتابیس
+    sliders = Slider.objects.all().order_by('order')  # دریافت اسلایدرها
+    sections = Section.objects.all().order_by('order')  # دریافت سکشن‌ها
+    sidebars = Sidebar.objects.all()  # دریافت سایدبارها
     context = {
         'sliders': sliders,
-        'sections': sections
+        'sections': sections,
+        'sidebars': sidebars
     }
     return render(request, 'speedload_app/home.html', context)
