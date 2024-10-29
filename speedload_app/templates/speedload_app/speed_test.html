@@ -1,25 +1,27 @@
 {% extends 'base.html' %}
 
-{% block title %}Speed Test{% endblock %}
+{% block title %}Website Speed Test{% endblock %}
 
 {% block content %}
-<h1>Website Speed Test</h1>
 
-<form id="speedTestForm" method="POST">
+
+<form id="speedTestForm" method="POST" style="max-width: 800px; margin: 20px auto; padding: 20px; background-color: #fff; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1); border-radius: 10px;">
     {% csrf_token %}
-    <label for="url">Website URL:</label>
-    <input type="text" id="url" name="url" placeholder="Enter website URL">
-    <button type="submit">Start Test</button>
+
+    <label for="url" style="display: block; margin-bottom: 10px; font-size: 18px;">Website URL:</label>
+    <input type="text" id="url" name="url" placeholder="Enter website URL" style="width: 60%; padding: 10px; font-size: 16px; margin-bottom: 20px; border: 1px solid #ddd; border-radius: 5px; box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);">
+    <button type="submit" style="width: 20%; padding: 12px; background-color: #4e73df; color: #fff; border: none; border-radius: 5px; font-size: 18px; cursor: pointer; transition: background-color 0.3s ease;">Start Test</button>
 </form>
 
-<div id="result">
+<div id="result" style="max-width: 800px; margin: 30px auto; background-color: #fff; padding: 20px; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1); border-radius: 10px;">
     <h3>Test Results:</h3>
-    Total Load Time: <span id="totalLoadTime"></span> seconds
-    <div class="chart-container">
-        <div class="chart-box">
+    <p>Total Load Time: <span id="totalLoadTime" style="font-weight: bold; color: #4e73df;"></span> seconds</p>
+
+    <div class="chart-container" style="display: flex; justify-content: space-around; gap: 20px; margin-top: 30px;">
+        <div class="chart-box" style="flex: 1;">
             <canvas id="loadTimeChart" width="400" height="200"></canvas>
         </div>
-        <div class="chart-box">
+        <div class="chart-box" style="flex: 1;">
             <canvas id="resourceSizeChart" width="400" height="200"></canvas>
         </div>
     </div>

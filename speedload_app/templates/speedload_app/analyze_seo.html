@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>آنالیز سئو</title>
+    <style>
+        /* تنظیمات کلی برای بدنه و رنگ‌ها */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f4f8;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            direction: rtl; /* راست چین */
+        }
+
+        /* استایل عنوان اصلی صفحه */
+        h1 {
+            text-align: center;
+            margin: 30px 0;
+            font-size: 2.5em;
+            color: #007bff;
+        }
+
+        /* تنظیمات فرم ورودی */
+        form {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            text-align: left; /* راست چین فرم */
+        }
+
+        label {
+            font-size: 1.2em;
+            display: block;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        /* استایل ورودی متن */
+        input[type="text"] {
+            width: 70%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1em;
+            transition: border 0.3s;
+            text-align: left; /* راست چین ورودی */
+        }
+
+        input[type="text"]:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+
+        /* دکمه ارسال فرم */
+        button {
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        /* پیام بارگذاری */
+        #loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+            font-size: 1.2em;
+            color: #007bff;
+        }
+
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* بخش نمایش نتایج */
+        #results {
+            max-width: 600px;
+            margin: 30px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: #007bff;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 2em;
+        }
+
+        /* استایل برای لیست نتایج */
+        ul {
+            list-style-type: none;
+            padding: 0;
+            text-align: right; /* راست چین لیست */
+        }
+
+        li {
+            background: linear-gradient(135deg, #e2f1ff 0%, #c5e1ff 100%);
+            margin: 15px 0;
+            padding: 15px;
+            border-radius: 8px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        li::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            right: -10px; /* راست چین */
+            transform: translateY(-50%);
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #007bff;
+        }
+
+        li:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        /* استایل مخصوص راهنمای بهینه‌سازی عنوان */
+        .recommendation {
+            font-size: 0.9em;
+            color: #555;
+            margin-top: 5px;
+            background: #f9f9f9;
+            padding: 10px;
+            border-left: 4px solid #007bff;
+            border-radius: 4px;
+            line-height: 1.6;
+            text-align: right; /* راست چین متن راهنما */
+        }
+
+        /* تنظیمات ریسپانسیو برای دستگاه‌های کوچکتر */
+        @media (max-width: 600px) {
+            form, #results {
+                width: 90%;
+            }
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>آنالیز سئو سایت</h1>
+    <form id="seo-form">
+        {% csrf_token %}
+        <label for="url">آدرس سایت:</label>
+        <input type="text" id="url" name="url" placeholder="http://example.com" required>
+        <button type="submit">بررسی سئو</button>
+    </form>
+
+    <div id="loading">
+        در حال بررسی آدرس سایت
+        <div class="loader"></div>
+    </div>
+
+    <div id="results" style="margin-top: 20px;"></div>
+
+    <script>
+        $(document).ready(function() {
+            $('#seo-form').on('submit', function(event) {
+                event.preventDefault();
+                $('#loading').show();
+                $('#results').empty();
+
+                $.ajax({
+                    type: 'POST',
+                    url: "{% url 'analyze_seo' %}",
+                    data: $(this).serialize(),
+                    success: function(data) {
+                        var resultsHtml = "<h2>نتایج آنالیز سئو</h2><ul>";
+
+                        // نمایش عنوان و طول آن با توصیه‌های بهینه‌سازی
+                        resultsHtml += "<li><strong>عنوان سایت:</strong> " + data.title_text + "</li>";
+                        resultsHtml += "<li><strong>طول عنوان:</strong> " + data.title_length + " حرف</li>";
+                        resultsHtml += "<div class='recommendation'>به طور مطلوب، برچسب عنوان شما باید بین 10 تا 70 حرف باشد (با احتساب فاصله). اطمینان حاصل کنید که عنوان شما صریح و حاوی کلمات کلیدی مهم شما است. مطمئن شوید که هر صفحه یک عنوان منحصر به فرد دارد.</div>";
+
+                        // سایر نتایج سئو
+                       // سایر نتایج سئو
+                        resultsHtml += "<li>تعداد کلمات توضیحات متا: " + data.meta_description_length + "</li>";
+                        resultsHtml += "<li>توضیحات متا: " + data.meta_description_content + "</li>";
+                        resultsHtml += "<div class='recommendation'><strong>پیام بهینه‌سازی:</strong> " + data.optimal_meta_message + "</div>";
+
+
+                        resultsHtml += "<li>تعداد کلمات کلیدی: " + data.keyword_count + "</li>";
+                        resultsHtml += "<li>ثبات کلمه کلیدی: " + data.keyword_consistency + "</li>";
+                        resultsHtml += "<li>نسبت کد به متن: " + data.text_html_ratio.toFixed(2) + "%</li>";
+                        resultsHtml += "<li>وضعیت GZIP: " + (data.gzip_enabled ? "فعال" : "غیر فعال") + "</li>";
+                        resultsHtml += "<li>ریدایرکت WWW: " + (data.is_www_redirected ? "بله" : "خیر") + "</li>";
+                        resultsHtml += "<li>ریدایرکت آیپی: " + (data.ip_redirected ? "بله" : "خیر") + "</li>";
+                        resultsHtml += "<li>تعداد لینک‌ها: " + data.in_page_links_count + "</li>";
+                        resultsHtml += "<li>نقشه سایت: " + (data.sitemap_exists ? "موجود" : "موجود نیست") + "</li>";
+                        resultsHtml += "<li>فایل robots.txt: " + (data.robots_exists ? "موجود" : "موجود نیست") + "</li>";
+                        resultsHtml += "<li>آندراسکور در لینک‌ها: " + data.underscores_in_urls + "</li>";
+                        resultsHtml += "<li>وضعیت دامنه: " + data.domain_status + "</li>";
+                        resultsHtml += "<li>اطلاعات ثبت‌کننده: " + data.whois_data + "</li>";
+                        resultsHtml += "<li>مناسبت برای موبایل: " + (data.mobile_friendly ? "بله" : "خیر") + "</li>";
+                        resultsHtml += "<li>حجم صفحه: " + data.page_size + " کیلوبایت</li>";
+                        resultsHtml += "<li>وجود فاویکون: " + (data.favicon_exists ? "بله" : "خیر") + "</li>";
+                        resultsHtml += "<li>وجود صفحه 404 سفارشی: " + (data.custom_404_exists ? "بله" : "خیر") + "</li>";
+
+                        // افزودن اطلاعات محلی سازی بازدیدکنندگان
+                        resultsHtml += "<li>محل بازدیدکنندگان: " + data.visitor_location + "</li>";
+
+                        // بستن لیست
+                        resultsHtml += "</ul>";
+                        $('#results').html(resultsHtml);
+                    },
+                    error: function(xhr, status, error) {
+                        $('#loading').hide();
+                        $('#results').html("<p style='color:red;'>خطایی رخ داده است. لطفاً دوباره تلاش کنید.</p>");
+                    },
+                    complete: function() {
+                        $('#loading').hide();
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

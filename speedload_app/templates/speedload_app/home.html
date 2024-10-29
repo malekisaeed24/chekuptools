@@ -1,48 +1,44 @@
 {% extends 'base.html' %}
-{% load static %}
-
 
 {% block title %}صفحه اصلی{% endblock %}
 
 {% block content %}
-<div class="container">
-    <section class="slider">
-        <div class="slider-container">
-            {% for slider in sliders %}
-            <div class="slide" style="background-image: url('{{ slider.image.url }}');">
-                <a href="{{ slider.link }}">{{ slider.title }}</a>
-            </div>
-            {% endfor %}
-        </div>
-    </section>
-
-    <section class="sidebar">
-        {% if sidebars %}
-            {% for sidebar in sidebars %}
-            <div class="sidebar-item">
-                <img src="{{ sidebar.icon.url }}" alt="{{ sidebar.title }}" style="width: 50px; height: 50px;" />
-                <h2>{{ sidebar.title }}</h2>
-                <p>{{ sidebar.content }}</p>
-            </div>
-            {% endfor %}
-        {% else %}
-            <p>هیچ سایدباری وجود ندارد.</p>
-        {% endif %}
-    </section>
-
-    <section class="sections">
-        {% for section in sections %}
-        <div class="section">
-            {% if section.image %}
-                <img src="{{ section.image.url }}" alt="{{ section.title }}">
-            {% endif %}
-            <h2>{{ section.title }}</h2>
-            <p>{{ section.description }}</p>
-            <a href="{{ section.link }}">ادامه مطلب</a>
+<section class="slider">
+    <div class="slider-container">
+        {% for slider in sliders %}
+        <div class="slide" style="background-image: url('{{ slider.image.url }}');">
+            <a href="{{ slider.link }}">{{ slider.title }}</a>
         </div>
         {% endfor %}
-    </section>
-</div>
+    </div>
+</section>
+
+<section class="sidebar">
+    {% if sidebars %}
+        {% for sidebar in sidebars %}
+        <div class="sidebar-item">
+            <img src="{{ sidebar.icon.url }}" alt="{{ sidebar.title }}" style="width: 50px; height: 50px;" />
+            <h2>{{ sidebar.title }}</h2>
+            <p>{{ sidebar.content }}</p>
+        </div>
+        {% endfor %}
+    {% else %}
+        <p>هیچ سایدباری وجود ندارد.</p>
+    {% endif %}
+</section>
+
+<section class="sections">
+    {% for section in sections %}
+    <div class="section">
+        {% if section.image %}
+            <img src="{{ section.image.url }}" alt="{{ section.title }}">
+        {% endif %}
+        <h2>{{ section.title }}</h2>
+        <p>{{ section.description }}</p>
+        <a href="{{ section.link }}">ادامه مطلب</a>
+    </div>
+    {% endfor %}
+</section>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
