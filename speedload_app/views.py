@@ -8,7 +8,6 @@ import requests
 import whois
 import asyncio
 import aiohttp
-import re
 import time
 
 # --- Speed Test Functions ---
@@ -180,6 +179,11 @@ def analyze_seo(request):
             custom_404_exists = requests.head(urljoin(url, '/404'))  # فرض می‌کنیم که آدرس صفحه 404 این‌گونه است
             custom_404_status = custom_404_exists.status_code == 200
 
+            # بررسی تعداد تصاویر و آدرس تصاویر بدون alt
+            images = soup.find_all('img')
+            total_images = len(images)
+            images_without_alt = [img['src'] for img in images if not img.get('alt')]
+
             # صفحات ایندکس شده (مثال)
             indexed_pages = "در حال بررسی"  # این مورد نیاز به روش خاصی دارد که می‌توانید توسعه دهید.
 
@@ -209,12 +213,15 @@ def analyze_seo(request):
                 'page_size': page_size,
                 'favicon_exists': favicon_exists,
                 'custom_404_status': custom_404_status,
+                'total_images': total_images,
+                'images_without_alt_count': len(images_without_alt),  # تعداد تصاویر بدون alt
+                'images_without_alt': images_without_alt,
                 'indexed_pages': indexed_pages,
                 'visitors_localization': visitors_localization,
             })
 
-        except Exception as e:
-            return JsonResponse({'error': 'خطا در پردازش URL', 'details': str(e)})
+        except requests.RequestException:
+            return JsonResponse({'error': 'خطا در دسترسی به آدرس وارد شده.'})
 
     return render(request, 'speedload_app/analyze_seo.html')
 

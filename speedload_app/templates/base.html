@@ -6,77 +6,93 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}صفحه{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}"> <!-- فراخوانی فایل CSS از static -->
+    <link href="https://fonts.googleapis.com/css2?family=Vazir&display=swap" rel="stylesheet">
+
     <style>
+        :root {
+            --primary-color: #4a4a4a;
+            --secondary-color: #333;
+            --background-color: #eef2f3;
+            --text-color: #333;
+            --footer-bg-color: #4a4a4a;
+            --header-shadow: rgba(0, 0, 0, 0.2);
+            --footer-shadow: rgba(0, 0, 0, 0.1);
+            --transition-speed: 0.3s;
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #eef2f3;
+            font-family: 'Yekan', sans-serif;
+            background-color: var(--background-color);
             margin: 0;
             padding: 0;
             line-height: 1.6;
-            color: #333;
+            color: var(--text-color);
         }
 
         header {
-            background-color: #4a4a4a;
+            background-color: #ff6700;
             color: white;
             padding: 20px 0;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 12px var(--header-shadow);
             position: sticky;
             top: 0;
             z-index: 100;
         }
 
-        nav ul {
-            list-style-type: none;
-            margin: 0;
-            padding: 0;
+        nav {
             display: flex;
             justify-content: center;
         }
 
+        nav ul {
+            list-style: none;
+            display: flex;
+            padding: 0;
+        }
+
         nav ul li {
-            margin: 0 20px;
+            margin: 0 15px;
         }
 
         nav ul li a {
             color: white;
             text-decoration: none;
             font-size: 18px;
-            padding: 10px 15px;
+            padding: 10px 20px;
             border-radius: 30px;
-            background-color: transparent; /* Make background transparent initially */
-            transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease; /* Added transform for hover effect */
+            background-color: transparent; /* Transparent initially */
+            transition: background-color var(--transition-speed), color var(--transition-speed), transform var(--transition-speed);
         }
 
         nav ul li a:hover {
-            background-color: #333;
+            background-color: var(--secondary-color);
             color: #fff;
-            transform: translateY(-2px); /* Slightly lift the link on hover */
-        }
-
-        footer {
-            background-color: #4a4a4a;
-            color: white;
-            text-align: center;
-            padding: 10px 0;
-            position: relative;
-            bottom: 0;
-            width: 100%;
-            box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1); /* Added shadow for depth */
+            transform: translateY(-3px); /* Lift link on hover */
         }
 
         main {
             padding: 20px; /* Added padding for main content */
         }
 
+        footer {
+            background-color: #ff6700;
+            color: white;
+            text-align: center;
+            padding: 15px 0;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+            box-shadow: 0 -2px 8px var(--footer-shadow);
+        }
+
         /* Responsive Design */
         @media (max-width: 600px) {
             nav ul {
-                flex-direction: column; /* Stack items vertically on smaller screens */
+                flex-direction: column; /* Stack items vertically */
             }
 
             nav ul li {
-                margin: 10px 0; /* Add space between items */
+                margin: 10px 0; /* Space between items */
             }
         }
     </style>

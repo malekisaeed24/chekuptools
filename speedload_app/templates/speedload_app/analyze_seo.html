@@ -1,13 +1,13 @@
-<!DOCTYPE html>
-<html lang="fa">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% extends 'base.html' %}
+
+{% block title %}آنالیز سئو{% endblock %}
+
+{% block content %}
     <title>آنالیز سئو</title>
     <style>
         /* تنظیمات کلی برای بدنه و رنگ‌ها */
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: 'Yekan', sans-serif;
             background-color: #f0f4f8;
             color: #333;
             margin: 0;
@@ -25,13 +25,13 @@
 
         /* تنظیمات فرم ورودی */
         form {
-            max-width: 600px;
+            max-width: 800px;
             margin: 0 auto;
             padding: 20px;
             background: #fff;
             border-radius: 10px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            text-align: left; /* راست چین فرم */
+            text-align: center; /* راست چین فرم */
         }
 
         label {
@@ -44,9 +44,9 @@
         /* استایل ورودی متن */
         input[type="text"] {
             width: 70%;
-            padding: 10px;
+            padding: 1.1em 2em;
             border: 1px solid #ccc;
-            border-radius: 5px;
+            border-radius: 12px;
             font-size: 1em;
             transition: border 0.3s;
             text-align: left; /* راست چین ورودی */
@@ -58,50 +58,100 @@
         }
 
         /* دکمه ارسال فرم */
-        button {
-            padding: 10px 15px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
+        .submit-button {
+            padding: 1.1em 2em;
+            font-size: 15px;
+            color: #131313;
             cursor: pointer;
-            font-size: 1em;
-            transition: background-color 0.3s;
-            margin-top: 10px;
+            position: relative;
+            transition: all 0.3s;
+            border-radius: 12px;
+            background-color: #ecd448;
+            font-weight: bolder;
+            box-shadow: 0 2px 0 2px #000;
+            border: none;
         }
 
-        button:hover {
-            background-color: #0056b3;
+        .submit-button:hover {
+            background-color: #4cc9f0;
+            color: #fff;
+            box-shadow: 0 2px 0 2px #0d3b66;
+        }
+
+        .submit-button:active {
+            transform: scale(0.9);
         }
 
         /* پیام بارگذاری */
-        #loading {
+        /* استایل بهبود یافته برای پیام بارگذاری */
+         #loading {
             display: none;
             text-align: center;
-            margin-top: 20px;
+            margin: 0; /* حذف حاشیه */
+            padding: 20px;
+            position: fixed; /* استفاده از position fixed برای مرکز کردن */
+            top: 50%; /* مرکز عمودی */
+            left: 50%; /* مرکز افقی */
+            transform: translate(-50%, -50%); /* مرکز کردن کامل */
             font-size: 1.2em;
             color: #007bff;
+            font-weight: bold;
         }
 
+        /* لودر جدید */
         .loader {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #3498db;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
-            display: inline-block;
-            margin-left: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: row;
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .slider {
+            overflow: hidden;
+            background-color: white;
+            margin: 0 15px;
+            height: 80px;
+            width: 20px;
+            border-radius: 30px;
+            box-shadow: 15px 15px 20px rgba(0, 0, 0, 0.1), -15px -15px 30px #fff,
+                inset -5px -5px 10px rgba(0, 0, 255, 0.1),
+                inset 5px 5px 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .slider::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 20px;
+            width: 20px;
+            border-radius: 100%;
+            box-shadow: inset 0px 0px 0px rgba(0, 0, 0, 0.3), 0px 420px 0 400px #2697f3,
+                inset 0px 0px 0px rgba(0, 0, 0, 0.1);
+            animation: animate_2 2.5s ease-in-out infinite;
+            animation-delay: calc(-0.5s * var(--i));
+        }
+
+        @keyframes animate_2 {
+            0% {
+                transform: translateY(250px);
+                filter: hue-rotate(0deg);
+            }
+
+            50% {
+                transform: translateY(0);
+            }
+
+            100% {
+                transform: translateY(250px);
+                filter: hue-rotate(180deg);
+            }
         }
 
         /* بخش نمایش نتایج */
         #results {
-            max-width: 600px;
+            max-width: 800px;
             margin: 30px auto;
             padding: 20px;
             background: #fff;
@@ -162,6 +212,36 @@
             line-height: 1.6;
             text-align: right; /* راست چین متن راهنما */
         }
+        .dropdown-content {
+            display: none;
+            list-style-type: none;
+            padding: 10px 20px;
+            background: #f1f9ff;
+            border-radius: 5px;
+            margin-top: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .dropdown.open .dropdown-content {
+            display: block;
+        }
+        .dropdown-icon {
+            cursor: pointer;
+            margin-left: 10px;
+            font-size: 0.8em;
+            color: #007bff;
+        }
+        li {
+            word-break: break-word; /* شکست کلمات برای جلوگیری از بیرون‌زدن */
+            overflow-wrap: break-word; /* شکست خطوط به جای بیرون زدن از کادر */
+        }
+        .dropdown-content li {
+            word-break: break-word;
+            overflow-wrap: break-word;
+        }
+
+
+
 
         /* تنظیمات ریسپانسیو برای دستگاه‌های کوچکتر */
         @media (max-width: 600px) {
@@ -169,24 +249,91 @@
                 width: 90%;
             }
         }
+
+                /* From Uiverse.io by catraco */
+        .btn-get-started {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            color: black;
+            background: #4dd4ac;
+            border: none;
+            border-radius: 2rem;
+            font-weight: bold;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.5s;
+        }
+
+        .btn-get-started div {
+            letter-spacing: 2px;
+        }
+
+        .btn-get-started:hover {
+            transform: scale(1.1);
+        }
+
+        .btn-get-started svg {
+            width: 25px;
+            transition: transform 0.5s, opacity 0.5s;
+            opacity: 0;
+        }
+
+        .btn-get-started:hover svg {
+            transform: translateX(0%);
+            opacity: 1;
+        }
+
+        /* تنظیمات ریسپانسیو */
+        @media (max-width: 600px) {
+            form, #results {
+                width: 90%;
+            }
+        }
+
     </style>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-</head>
+
 <body>
-    <h1>آنالیز سئو سایت</h1>
-    <form id="seo-form">
-        {% csrf_token %}
-        <label for="url">آدرس سایت:</label>
-        <input type="text" id="url" name="url" placeholder="http://example.com" required>
-        <button type="submit">بررسی سئو</button>
-    </form>
+   <h1>آنالیز سئو سایت</h1>
+        <form id="seo-form">
+            {% csrf_token %}
+            <label for="url"></label>
+            <p style="text-align: center; margin-top: 14px; color: #666;">لطفاً آدرس وب‌سایت خود را وارد کنید و دکمه بررسی را فشار دهید.</p>
+            <input type="text" id="url" name="url" placeholder="https://example.com" required>
+            <button type="submit" class="submit-button">بررسی سئو</button>
+            <br>
+             <p style="text-align: right; margin-top: 10px; color: #666;"><strong>آنالیز سئو و بررسی سایت : </strong></p>
+            <p style="text-align: justify; margin-top: 10px;color: #666;">توسط این ابزار می توانید بصورت کامل سئو ی سایت خود را بررسی کنید این ابزار سایت شما را بصورت کامل در بیش از 50 زمینه بررسی می کند و توضیحات کاملی برای رفع مشکل مورد نظر به شما ارائه می دهد تا بتوانید به تنهایی سایت خود را سئو نمایید
+
+            </p>
+            <br>
+
+            <button class="btn-get-started">
+                <div>راهنمای ابزار</div>
+                <svg xmlns="http://www.w3.org/2000/svg" width="25px" height="25px" viewBox="0 0 24 24" fill="none">
+                    <path d="M11.6801 14.62L14.2401 12.06L11.6801 9.5" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                    <path d="M4 12.0601H14.17" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                    <path d="M12 4C16.42 4 20 7 20 12C20 17 16.42 20 12 20" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+            </button>
+
+        </form>
+
 
     <div id="loading">
-        در حال بررسی آدرس سایت
-        <div class="loader"></div>
+        <span>در حال بررسی آدرس سایت</span>
+        <section class="loader">
+            <div class="slider" style="--i:0"></div>
+            <div class="slider" style="--i:1"></div>
+            <div class="slider" style="--i:2"></div>
+            <div class="slider" style="--i:3"></div>
+            <div class="slider" style="--i:4"></div>
+        </section>
     </div>
 
     <div id="results" style="margin-top: 20px;"></div>
+
 
     <script>
         $(document).ready(function() {
@@ -212,6 +359,15 @@
                         resultsHtml += "<li>تعداد کلمات توضیحات متا: " + data.meta_description_length + "</li>";
                         resultsHtml += "<li>توضیحات متا: " + data.meta_description_content + "</li>";
                         resultsHtml += "<div class='recommendation'><strong>پیام بهینه‌سازی:</strong> " + data.optimal_meta_message + "</div>";
+                        resultsHtml += "<li><strong>تعداد کل تصاویر:</strong> " + data.total_images + "</li>";
+
+                    // تصاویر بدون alt به صورت کشویی
+                        resultsHtml += "<li class='dropdown'><span>تصاویر بدون alt (" + data.images_without_alt_count + ")</span><span class='dropdown-icon'>▼</span>";
+                        resultsHtml += "<ul class='dropdown-content'>";
+                        data.images_without_alt.forEach(function(image) {
+                            resultsHtml += "<li>آدرس تصویر: " + image + "</li>";
+                        });
+                        resultsHtml += "</ul></li>";
 
 
                         resultsHtml += "<li>تعداد کلمات کلیدی: " + data.keyword_count + "</li>";
@@ -237,10 +393,15 @@
                         // بستن لیست
                         resultsHtml += "</ul>";
                         $('#results').html(resultsHtml);
+                        // انیمیشن کشویی
+                        $('.dropdown').on('click', function() {
+                            $(this).toggleClass('open');
+                        });
                     },
                     error: function(xhr, status, error) {
                         $('#loading').hide();
                         $('#results').html("<p style='color:red;'>خطایی رخ داده است. لطفاً دوباره تلاش کنید.</p>");
+
                     },
                     complete: function() {
                         $('#loading').hide();
@@ -250,4 +411,5 @@
         });
     </script>
 </body>
-</html>
+
+{% endblock %}
